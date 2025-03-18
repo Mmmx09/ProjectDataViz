@@ -158,3 +158,29 @@ a:hover {
 .nav-links a:hover {
   text-decoration: underline;
 }
+
+/* Related_work Part and Below */
+.related-section {
+  background-color: #ffff;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  max-width: 80%;
+  margin: 40px auto;
+}
+
+.related-section h3 {
+  flex: 1;
+  text-align: left;
+  font-size: 24px;
+  font-weight: bold;
+  color: #111;
+}
+
+.related-section p {
+  flex: 2;
+  text-align: left;
+  font-size: 16px;
+  color: #444;
+  line-height: 1.8;
+}
