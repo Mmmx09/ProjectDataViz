@@ -1,9 +1,12 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="En">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-waste visualization</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-waste visualization</title>
+
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://d3js.org/topojson.v3.min.js"></script>
 
   <link href='index_main.css' rel='stylesheet'>
 </head>
@@ -28,7 +31,7 @@
           <h1>E-waste visualization</h1>
           <h2>This project focuses on analyzing global E-waste (electronic waste) data</h2>
           <p class="authors">
-            Minmin Xiang, Sirine and Tianjin Fu
+            Minmin Xiang, Saghiri Sirine and Tianjin Fu
           </p>
       </div>
     </div>
@@ -46,6 +49,297 @@
     </div>
   </div>
 
+  <!-- E-waste Choropleth Map Section -->
+  <div class="full-width section-map">
+    <div class="container">
+      <h3>Global E-waste Generation and Recycling rate</h3>
+      <div id="map"></div>
+      <p class="map-description">Hover over a country to see details. Click to view trend over years.</p>
+      
+      <div class="table-wrapper">
+        <!-- Left-hand text introduction -->
+        <div class="table-description">
+          <caption>Conclusion:</caption>
+          <p>
+            • India has the highest recycling rate, indicating that its e-waste recycling system may be relatively better or e-waste management is better. 
+            <br/>• Bangladesh has the lowest recycling rates, which could mean that there is room for improvement in the country's e-waste treatment and recycling systems. 
+            <br/>• China has the lowest total amount of e-waste, but the recycling rate is not the highest, which may have problems with the efficiency of e-waste management. 
+            <br/>Overall, recycling rates in all countries are between 32% and 34%, showing that there is still much room for improvement in e-waste recycling.
+          </p>
+        </div>
+
+        <div class="table-container">
+          <table class="simple-table">
+            <caption>Total E-waste per caption and Recycling rate</caption>
+            <thead>
+              <tr>
+                <th>Country</th>
+                <th>Total E-waste (kg)</th>
+                <th>Recycled Amount</th>
+                <th>Total Items</th>
+                <th>Recycling Rate (%)</th> 
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Germany</td><td>39238.72</td><td>504</td><td>1532</td><td>32.89</td></tr>
+              <tr><td>Bangladesh</td><td>38087.31</td><td>501</td><td>1550</td><td>32.32</td></tr>
+              <tr><td>England</td><td>39403.03</td><td>501</td><td>1481</td><td>33.82</td></tr>
+              <tr><td>India</td><td>41661.63</td><td>521</td><td>1530</td><td>34.05</td></tr>
+              <tr><td>USA</td><td>39217.21</td><td>497</td><td>1471</td><td>33.78</td></tr>
+              <tr><td>China</td><td>37985.04</td><td>476</td><td>1424</td><td>33.42</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  function drawmapgraph() {
+  const width = 960;
+  const height = 600;
+
+  // Creating an SVG container
+  const svgMap = d3.select("#map")
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+  // map projection
+  const projection = d3.geoNaturalEarth1()
+    .scale(160)
+    .translate([width / 2, height / 2]);
+
+  const path = d3.geoPath().projection(projection);
+
+  // tooltip
+  const tooltip = d3.select("#map").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0)
+    .style("position", "absolute")
+    .style("background", "white")
+    .style("padding", "8px")
+    .style("border", "1px solid #ccc")
+    .style("border-radius", "4px");
+
+  Promise.all([
+    d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson"),
+    d3.csv("Processed_E-Waste_Data.csv") 
+  ]).then(([geoData, data]) => {
+    
+    // Dynamically set the color ratio
+    const maxEwaste = d3.max(data, d => +d["Total_E_Waste"]);
+    const colorScale = d3.scaleSequential()
+      .interpolator(d3.interpolateOranges)
+      .domain([25000, maxEwaste]); 
+
+    // Process the data and store it in Map
+    const dataMap = new Map();
+    data.forEach(d => {
+      dataMap.set(d.Location, {  
+        eWaste: +d["Total_E_Waste"],
+        perCapita: +d["Total_E_Waste"] / +d["Total_Items"],  
+        recycleRate: +d["Recycling_Rate"]
+      });
+    });
+
+    // draw map
+    svgMap.append("g")
+      .selectAll("path")
+      .data(geoData.features)
+      .join("path")
+      .attr("d", path)
+      .attr("fill", d => {
+        const location = d.properties.name; 
+        const val = dataMap.get(location);
+        return val ? colorScale(val.eWaste) : "#eee";
+      })
+      .style("stroke", "#999")
+      .on("mouseover", function (event, d) {
+        const location = d.properties.name;
+        const val = dataMap.get(location);
+        d3.select(this).attr("stroke", "#000").attr("stroke-width", 1.5);
+        tooltip.transition().duration(200).style("opacity", .9);
+        tooltip.html(`
+          <strong>${location}</strong><br/>
+          E-waste: ${val ? val.eWaste.toLocaleString() : 'N/A'} tonnes<br/>
+          Per capita: ${val ? val.perCapita.toFixed(2) : 'N/A'} kg<br/>
+          Recycling rate: ${val ? val.recycleRate.toFixed(1) : 'N/A'}%
+        `)
+          .style("left", (event.pageX + 10) + "px")
+          .style("top", (event.pageY - 40) + "px");
+      })
+      .on("mouseout", function () {
+        d3.select(this).attr("stroke", "#999").attr("stroke-width", 1);
+        tooltip.transition().duration(500).style("opacity", 0);
+      })
+      .on("click", function (event, d) {
+        const location = d.properties.name;
+        alert(`You can click:${location}, You can load the trend chart here`);
+      });
+  });
+  }
+  drawmapgraph();
+  </script>
+
+  <div class="full-width section-chart">
+    <div class="container">
+      <h3>E-waste Generation Trend</h3>
+      <p class="chart-description">Click on a country on the map to view its e-waste trend over time.</p>
+      <div id="trend-chart"></div>
+    </div>
+  </div>
+
+  <script>
+    function drawtrendchart(){
+      const margin = { top: 20, right: 30, bottom: 50, left: 60 };
+      const width = 800 - margin.left - margin.right;
+      const height = 400 - margin.top - margin.bottom;
+
+      // Create SVG canvas
+      const svgTrend = d3.select("#trend-chart")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+      // X-axis (timeline)
+      const x = d3.scaleTime().range([0, width]);
+      const xAxis = svgTrend.append("g").attr("transform", `translate(0, ${height})`);
+
+      // Y-axis (timeline)
+      const y = d3.scaleLinear().range([height, 0]);
+      const yAxis = svgTrend.append("g");
+
+      // Create a polyline generator
+      const line = d3.line()
+       .x(d => x(d.Year))
+       .y(d => y(d.Total_E_Waste));
+
+      // Add a polyline path
+      const path = svgTrend.append("path")
+        .attr("fill", "none")
+        .attr("stroke", "#007bff")
+        .attr("stroke-width", 2);
+
+      // tooltip
+      const tooltip = d3.select("#trend-chart").append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0)
+        .style("position", "absolute")
+        .style("background", "white")
+        .style("padding", "8px")
+        .style("border", "1px solid #ccc")
+        .style("border-radius", "4px");
+      
+      d3.csv("Processed_E-Waste_Trend_Data.csv").then(data => {
+      data.forEach(d => {
+        d.Year = +d.Year;
+        d.Total_E_Waste = +d.Total_E_Waste;
+      });
+
+      // Group data by country
+      const countryDataMap = d3.group(data, d => d.Location);
+      updateTrendChart("USA");
+
+      // Defines a function to update the line chart
+      function updateTrendChart(country) {
+        const countryData = countryDataMap.get(country);
+
+      if (!countryData) {
+        console.warn(`No data available for ${country}`);
+        return;
+      }
+
+      // Updates the range of the X and Y axe
+      x.domain(d3.extent(countryData, d => d.Year));
+      y.domain([0, d3.max(countryData, d => d.Total_E_Waste)]);
+      xAxis.call(d3.axisBottom(x).ticks(5));
+      yAxis.call(d3.axisLeft(y));
+
+      // Update polyline data
+      path.datum(countryData)
+        .transition().duration(800)
+        .attr("d", line);
+
+      // Add mouse interaction
+      const circles = svgTrend.selectAll(".data-point").data(countryData);
+
+      circles.enter()
+        .append("circle")
+        .attr("class", "data-point")
+        .attr("r", 4)
+        .merge(circles)
+        .attr("cx", d => x(d.Year))
+        .attr("cy", d => y(d.Total_E_Waste))
+        .attr("fill", "#007bff")
+        .on("mouseover", (event, d) => {
+          tooltip.transition().duration(200).style("opacity", .9);
+          tooltip.html(`
+            <strong>${country}</strong><br/>
+            Year: ${d.Year}<br/>
+            E-waste: ${d.Total_E_Waste.toLocaleString()} kg
+          `)
+            .style("left", (event.pageX + 10) + "px")
+            .style("top", (event.pageY - 40) + "px");
+        })
+        .on("mouseout", () => tooltip.transition().duration(500).style("opacity", 0));
+
+      circles.exit().remove();
+    }
+
+    // Bind the click map event to update the trend chart
+    d3.selectAll("path") 
+      .on("click", function(event, d) {
+        const country = d.properties.name;
+        console.log(`Clicked country: ${country}`);
+        updateTrendChart(country);
+      });
+  });
+  }
+  drawtrendchart()
+  </script>
+
+  <div class="full-width section-chart">
+    <div class="container">
+      <h3>Carbon Footprint Trend by Region</h3>
+      <div class = 'chart-controls'>
+        <label for="region-select">Select Region:</label>
+        <select id="region-select">
+          <option value="All">All</option>
+          <option value="Berlin">Berlin</option>
+          <option value="Dhaka">Dhaka</option>
+          <option value="London">London</option>
+          <option value="Mumbai">Mumbai</option>
+          <option value="New York">New York</option>
+          <option value="Shanghai">Shanghai</option>
+        </select>
+        <label for="year-range">Year Range:</label>
+        <input type="range" id="year-range" min="2023" max="2024" value="2024" step="1" />
+        <span id="year-display">2024</span>
+      </div>
+      <div id="lineChart"></div>
+      <div class="tooltip" id="tooltip"></div>
+    </div>
+  </div>
+  <div class="chart-summary">
+    <p>
+      1. Overall trend:
+      <br>• The carbon footprint of all regions increased significantly in 2024 compared to 2023, and the increase was above 3400 kg CO, 
+      <br>• Indicating that the growth of the e-waste increased the carbon emissions from the treatment process. 
+      <br>2. Largest increase in carbon footprint: 
+      <br>• Mumbai: Increased its carbon footprint by 4,519.46 kg CO, the most of any region. 
+      <br>3. The city with the smallest increase in carbon footprint: 
+      <br>• Shanghai: Although it also increased by 3490.41 kg CO, it is relatively small compared to other cities. 
+      <br>v4. The surge in cities' carbon footprints may be related to:  
+      <br>• aging or inefficient recycling facilities.
+      <br>• Overall increase of E-waste. 
+      <br>• More energy-intensive equipment (refrigerators and air conditioners) are being recycled. 
+      <br>• Manual recycling (more energy intensive than automation).
+    </p>
+  </div>
+
   <!-- Related Work and the explaination of these inspire or differ -->
   <div class="related-section">
     <h3>Related Work</h3>
@@ -61,7 +355,7 @@
       : Covers e-waste policy and recycling.
     </p>
   </div>
-
+  
   <!-- Data sources -->
   <div class="full-width section-conclusion">
     <div class="container">
