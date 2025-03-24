@@ -184,3 +184,90 @@ a:hover {
   color: #444;
   line-height: 1.8;
 }
+
+/* E-waste Choropleth Map Section */
+.tooltip {
+  pointer-events: none;
+  font-size: 13px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.3);
+}
+
+/* Arrange text and tables horizontally */
+.table-wrapper {
+  display: flex;
+  align-items: center; 
+  justify-content: space-between; 
+  max-width: 100%;
+  margin-top: 10px;
+}
+
+/* Text left text introduction */
+.table-description {
+  flex: 1; 
+  font-size: 16px;
+  line-height: 1.5;
+  max-width: 50%; 
+  text-align: left;
+}
+
+/* Table dispaly */
+.table-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+  max-width: 100%;
+}
+.simple-table {
+  border-collapse: collapse;
+  font-size: 12px; 
+  text-align: center;
+  width: 50%; 
+}
+.simple-table caption {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  text-align: center;
+}
+.simple-table th, .simple-table td {
+  padding: 4px 8px;
+  border-bottom: 1px solid #ddd;
+}
+.simple-table tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+
+/* Line Chart Section Styling */
+#lineChart svg {
+  background-color: white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  display: block;
+  margin: 0 ;
+}
+
+.chart-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+/* Text right text introduction */
+.chart-summary {
+  flex: 1;
+  min-width: 300px;
+  font-size: 16px;
+  color: #333;
+  line-height: 1.5;
+  padding: 16px;
+}
+
+
+
+
+
+
+
+
