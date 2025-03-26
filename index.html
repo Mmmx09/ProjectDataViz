@@ -59,7 +59,7 @@
       <div class="table-wrapper">
         <!-- Left-hand text introduction -->
         <div class="table-description">
-          <caption>Conclusion:</caption>
+          <strong>Conclusion:</strong>
           <p>
             • India has the highest recycling rate, indicating that its e-waste recycling system may be relatively better or e-waste management is better. 
             <br/>• Bangladesh has the lowest recycling rates, which could mean that there is room for improvement in the country's e-waste treatment and recycling systems. 
@@ -319,6 +319,19 @@
     </div>
   </div>
 
+  <div class="container section-datasource">
+    <p>This chart shows the trend of the Carbon Footprint of different regions in the year of purchase of electronic equipment between 2010 and 2017.
+    </br><strong>Summary of regional carbon footprint changes</strong> 
+    </br>As can be seen from the chart, different regions have different performance in terms of carbon footprint. Some regions have significantly decreased in recent years, which may be due to the impact of energy-saving policies or equipment renewal. In some areas, there is a rebound or fluctuation phenomenon, which deserves further attention. 
+    </br>By analyzing carbon footprint data on a regional and annual basis, we found that the following three cities have experienced the most dramatic changes in carbon emissions over the past few years:
+    <ul>
+      <li><strong>London</strong>: The carbon footprint fluctuates the most, reflecting frequent equipment turnover or large differences in recycling.</li>
+      <li><strong>Shanghai</strong>: Changes in carbon emissions rank second, possibly related to rapid urbanization and growth in electronic consumption.</li>
+      <li><strong>Dhaka</strong>:There are also significant fluctuations, or subject to the diversity of ways in which resources are allocated and recycled</li>
+    </ul>
+    </p>
+  </div>
+
   <script>
     function drawyeardisplay() {
       const width = 1600;
@@ -430,127 +443,213 @@
   drawyeardisplay()
   </script>
 
-  <div class="full-width section-chart">
-    <div class="container">
-      <h3>Hazardous Material Composition & Impact Explorer</h3>
-    </div>
-    <div class="chart-container">
+<div class="full-width section-chart">
+  <div class="container">
+    <h3>Hazardous Material Composition & Impact Explorer</h3>
+
+    <div class="sunburst-table-wrapper">
       <div id="sunburst"></div>
-      <div id="bar-chart"></div>
+      <div class="table-panel">
+        <h3 id="table-title">Select a category</h3>
+        <div id="category-table"></div>
+      </div>
     </div>
-    <div class="tooltip" id="tooltip"></div>
   </div>
 
-  <script>
-    function drawsunburnchart() {
-    const width = 500;
-    const radius = width / 2;
-    const barWidth = 400;
-    const barHeight = 300;
+  <div class="tooltip" id="tooltip"></div>
+</div>
 
-    const color = d3.scaleOrdinal().range([
-      "#bdc3c7",  
-      "#7f8c8d",  
-      "#2c3e50",  
-      "#34495e",  
-      "#95a5a6"  
-    ]);
+<div class="container section-datasource">
+  <p>
+    <strong>Hazard Index (HI)</strong> It is a comprehensive index to measure the impact of harmful substances in electronic waste on the environment. The higher the value, the stronger the environmental toxicity or pollution potential of the substance.
+    </br><strong>Summary Analysis:</strong>
+    </br>From the sunburst chart and interactive tables, we observe that:
+    <ul>
+      <li><strong>Cadmium</strong> and <strong>Lead</strong> are dominant in large appliances, posing serious environmental risks.</li>
+      <li><strong>Mercury</strong> appears across all categories, suggesting widespread use and consistent hazard.</li>
+      <li><strong>Mobile devices</strong>, though lighter in weight, show relatively high Hazard Index values, highlighting their concentrated toxicity.</li>
+    </ul>
+  </p>
+  <p>
+    These findings highlight the importance of managing hazardous substances across different product categories and prioritizing safer materials in design and production.
+  </p>
+</div>
 
-    const arc = d3.arc()
-      .startAngle(d => d.x0)
-      .endAngle(d => d.x1)
-      .innerRadius(d => d.y0)
-      .outerRadius(d => d.y1);
+<script>
+const toxicDataTables = {
+  "Appliance": [
+    { component: "Cadmium", weight: 18415.63, hazard: 10.67 },
+    { component: "Lead", weight: 18216.01, hazard: 10.50 },
+    { component: "None", weight: 17892.32, hazard: 10.18 },
+    { component: "Mercury", weight: 16326.65, hazard: 10.70 }
+  ],
+  "Computers": [
+    { component: "Mercury", weight: 191.3, hazard: 11.20 },
+    { component: "Cadmium", weight: 185.25, hazard: 11.16 },
+    { component: "Lead", weight: 176.3, hazard: 10.85 },
+    { component: "None", weight: 191.34, hazard: 10.82 }
+  ],
+  "Electronics": [
+    { component: "Mercury", weight: 1544.97, hazard: 10.33 },
+    { component: "Cadmium", weight: 1443.27, hazard: 10.51 },
+    { component: "None", weight: 1425.21, hazard: 10.29 },
+    { component: "Lead", weight: 1342.28, hazard: 10.48 }
+  ],
+  "Mobile": [
+    { component: "None", weight: 30.15, hazard: 11.51 },
+    { component: "Mercury", weight: 27.56, hazard: 11.36 },
+    { component: "Cadmium", weight: 25.97, hazard: 11.11 },
+    { component: "Lead", weight: 21.74, hazard: 10.21 }
+  ]
+};
 
-    const tooltip = d3.select("#tooltip");
+function renderTable(category) {
+  const tableData = toxicDataTables[category];
+  if (!tableData) return;
 
-    d3.csv("e_waste dataset final.csv").then(data => {
-      data = data.filter(d => d.Toxic_Components && d.Weight_kg && d.Carbon_Footprint);
-      data.forEach(d => {
-        d.Weight_kg = +d.Weight_kg;
-        d.Carbon_Footprint = +d.Carbon_Footprint;
+  const tableHtml = `
+    <table>
+      <thead>
+        <tr>
+          <th>Toxic Component</th>
+          <th>Total Weight (kg)</th>
+          <th>Hazard Index</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${tableData.map(row => `
+          <tr>
+            <td>${row.component}</td>
+            <td>${row.weight.toFixed(2)}</td>
+            <td>${row.hazard.toFixed(2)}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+
+  document.getElementById("table-title").textContent = category + " - Top Hazardous Components";
+  document.getElementById("category-table").innerHTML = tableHtml;
+}
+renderTable("Appliance");
+</script>
+
+<script>
+  function drawsunburnchart() {
+  const width = 300;
+  const radius = width / 2;
+  const barWidth = 400;
+  const barHeight = 300;
+
+  const color = d3.scaleOrdinal().range([
+    "#bdc3c7",  
+    "#7f8c8d",  
+    "#2c3e50",  
+    "#34495e",  
+    "#95a5a6"  
+  ]);
+
+  const arc = d3.arc()
+    .startAngle(d => d.x0)
+    .endAngle(d => d.x1)
+    .innerRadius(d => d.y0)
+    .outerRadius(d => d.y1);
+
+  const tooltip = d3.select("#tooltip");
+
+  d3.csv("e_waste dataset final.csv").then(data => {
+    data = data.filter(d => d.Toxic_Components && d.Weight_kg && d.Carbon_Footprint);
+    data.forEach(d => {
+      d.Weight_kg = +d.Weight_kg;
+      d.Carbon_Footprint = +d.Carbon_Footprint;
+    });
+
+    const nested = d3.groups(data, d => d.Category, d => d.Toxic_Components)
+      .map(([category, components]) => {
+        return {
+          name: category,
+          children: components.map(([comp, entries]) => {
+            return {
+              name: comp,
+              value: d3.sum(entries, d => d.Weight_kg),
+              hazard: d3.mean(entries, d => d.Carbon_Footprint)
+            };
+          })
+        };
       });
 
-      const nested = d3.groups(data, d => d.Category, d => d.Toxic_Components)
-        .map(([category, components]) => {
-          return {
-            name: category,
-            children: components.map(([comp, entries]) => {
-              return {
-                name: comp,
-                value: d3.sum(entries, d => d.Weight_kg),
-                hazard: d3.mean(entries, d => d.Carbon_Footprint)
-              };
-            })
-          };
-        });
+    const rootData = {
+      name: "E-waste",
+      children: nested
+    };
 
-      const rootData = {
-        name: "E-waste",
-        children: nested
-      };
+    const root = d3.hierarchy(rootData)
+      .sum(d => d.value)
+      .sort((a, b) => b.value - a.value);
 
-      const root = d3.hierarchy(rootData)
-        .sum(d => d.value)
-        .sort((a, b) => b.value - a.value);
+    const partition = d3.partition().size([2 * Math.PI, radius])(root);
 
-      const partition = d3.partition().size([2 * Math.PI, radius])(root);
+    const svg = d3.select("#sunburst")
+      .append("svg")
+      .attr("width", width)
+      .attr("height", width)
+      .append("g")
+      .attr("transform", `translate(${radius},${radius})`);
 
-      const svg = d3.select("#sunburst")
+    svg.selectAll("path")
+      .data(partition.descendants().filter(d => d.depth))
+      .enter().append("path")
+      .attr("d", arc)
+      .attr("fill", d => color((d.children ? d : d.parent).data.name))
+      .attr("stroke", "#fff")
+      .attr("stroke-width", 1)
+      .on("mouseover", function(event, d) {
+        tooltip.style("opacity", 1)
+          .html(`<strong>${d.data.name}</strong><br>Weight: ${d.value.toFixed(2)} kg<br>Hazard Index: ${d.data.hazard ? d.data.hazard.toFixed(2) : 'N/A'}`)
+          .style("left", `${event.pageX + 10}px`)
+          .style("top", `${event.pageY - 28}px`);
+      })
+      .on("mousemove", function(event) {
+        tooltip.style("left", `${event.pageX + 10}px`)
+               .style("top", `${event.pageY - 28}px`);
+      })
+      .on("mouseout", () => tooltip.style("opacity", 0))
+      .on("click", function(event, d) {
+        if (d.depth === 1) {
+         // First level classification
+        renderTable(d.data.name);
+        }
+        if (d.depth === 2) {
+        drawBarChart(d);
+       }
+      });
+
+    function drawBarChart(d) {
+      d3.select("#bar-chart").html("");
+      const svgBar = d3.select("#bar-chart")
         .append("svg")
-        .attr("width", width)
-        .attr("height", width)
-        .append("g")
-        .attr("transform", `translate(${radius},${radius})`);
+        .attr("width", barWidth)
+        .attr("height", barHeight);
 
-      svg.selectAll("path")
-        .data(partition.descendants().filter(d => d.depth))
-        .enter().append("path")
-        .attr("d", arc)
-        .attr("fill", d => color((d.children ? d : d.parent).data.name))
-        .attr("stroke", "#fff")
-        .attr("stroke-width", 1)
-        .on("mouseover", function(event, d) {
-          tooltip.style("opacity", 1)
-            .html(`<strong>${d.data.name}</strong><br>Weight: ${d.value.toFixed(2)} kg<br>Hazard Index: ${d.data.hazard ? d.data.hazard.toFixed(2) : 'N/A'}`)
-            .style("left", `${event.pageX + 10}px`)
-            .style("top", `${event.pageY - 28}px`);
-        })
-        .on("mousemove", function(event) {
-          tooltip.style("left", `${event.pageX + 10}px`)
-                 .style("top", `${event.pageY - 28}px`);
-        })
-        .on("mouseout", () => tooltip.style("opacity", 0))
-        .on("click", function(event, d) {
-          if (d.depth === 2) drawBarChart(d);
-        });
+      const hazard = d.data.hazard || 0;
+      svgBar.append("rect")
+        .attr("x", 50)
+        .attr("y", 100)
+        .attr("width", hazard * 20)
+        .attr("height", 40)
+        .attr("fill", color(d.data.name));
 
-      function drawBarChart(d) {
-        d3.select("#bar-chart").html("");
-        const svgBar = d3.select("#bar-chart")
-          .append("svg")
-          .attr("width", barWidth)
-          .attr("height", barHeight);
-
-        const hazard = d.data.hazard || 0;
-        svgBar.append("rect")
-          .attr("x", 50)
-          .attr("y", 100)
-          .attr("width", hazard * 20)
-          .attr("height", 40)
-          .attr("fill", color(d.data.name));
-
-        svgBar.append("text")
-          .attr("x", 50)
-          .attr("y", 90)
-          .text(`${d.data.name} Hazard Index: ${hazard.toFixed(2)}`)
-          .style("font-weight", "bold");
-      }
-    });
-  }
-  drawsunburnchart()
-  </script>
-
+      svgBar.append("text")
+        .attr("x", 50)
+        .attr("y", 90)
+        .text(`${d.data.name} Hazard Index: ${hazard.toFixed(2)}`)
+        .style("font-weight", "bold");
+    }
+  });
+}
+drawsunburnchart()
+</script>
+  
   <!-- Related Work and the explaination of these inspire or differ -->
   <div class="related-section">
     <h3>Related Work</h3>
@@ -568,19 +667,20 @@
         <img src="pictures/OECD.jpg" alt="OECD - Environmental Statistics">
       </a>
     </div>
-  
-    <p>
-      Refer to three related e-waste data visualization projects:
-      <br>1. 
-      <a href="https://globalewaste.org/" target="_blank">The Global E-waste Monitor</a>
-      : The e-Waste Report, published by the United Nations, provides global statistics and trends on e-waste.
-      <br>2. 
-      <a href="https://www.statista.com/topics/3409/electronic-waste-worldwide/#editorsPicks" target="_blank">Statista E-waste Reports</a>
-      : Provides detailed e-waste market data, recycling trends and consumer behavior analysis.
-      <br>3. 
-      <a href="https://www.oecd.org/en/topics/environmental-statistics-accounts-and-indicators.html" target="_blank">OECD Environmental Data Portal</a>
-      : Covers e-waste policy and recycling.
-    </p>
+    <div class="container">
+      <p>
+        Refer to three related e-waste data visualization projects:
+        <br>1. 
+        <a href="https://globalewaste.org/" target="_blank">The Global E-waste Monitor</a>
+        : The e-Waste Report, published by the United Nations, provides global statistics and trends on e-waste.
+        <br>2. 
+        <a href="https://www.statista.com/topics/3409/electronic-waste-worldwide/#editorsPicks" target="_blank">Statista E-waste Reports</a>
+        : Provides detailed e-waste market data, recycling trends and consumer behavior analysis.
+        <br>3. 
+        <a href="https://www.oecd.org/en/topics/environmental-statistics-accounts-and-indicators.html" target="_blank">OECD Environmental Data Portal</a>
+        : Covers e-waste policy and recycling.
+      </p>
+    </div>
   </div>
   
   <!-- Data sources -->
@@ -625,8 +725,5 @@
       <p>The core objective of the project is to increase user awareness of e-waste issues through data visualization, and drive environmental awareness and policy improvement. We will continue to optimize our data analysis and visualization methods to provide a more intuitive and understandable presentation of information to provide valuable insights to diverse audiences.</p>.
     </div>
   </div>
-
-
-
 </body>
 </html>
