@@ -160,29 +160,44 @@ a:hover {
 }
 
 /* Related_work Part and Below */
+
 .related-section {
-  background-color: #ffff;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  max-width: 80%;
-  margin: 40px auto;
+  padding: 40px 20px;
+  max-width: 900px;
+  margin: auto;
+  text-align: left;
 }
 
 .related-section h3 {
-  flex: 1;
-  text-align: left;
-  font-size: 24px;
-  font-weight: bold;
-  color: #111;
+  margin-bottom: 20px;
+}
+
+.related-logos {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.related-logos a img {
+  height: 100px;        
+  width: auto;
+  object-fit: contain;
+  transition: transform 0.2s ease;
+}
+
+.related-logos a img:hover {
+  transform: scale(1.05); /* Hover to zoom in */
 }
 
 .related-section p {
-  flex: 2;
+  font-size: 15px;
+  line-height: 1.6;
   text-align: left;
-  font-size: 16px;
-  color: #444;
-  line-height: 1.8;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 /* E-waste Choropleth Map Section */
@@ -253,6 +268,18 @@ a:hover {
   gap: 10px;
   margin-bottom: 20px;
 }
+.chart-scroll-container {
+  overflow-x: auto;
+  overflow-y: hidden;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.chart-scroll-container svg {
+  display: block;
+  margin: 0 auto;
+  min-width: 800px;
+}
 
 /* Text right text introduction */
 .chart-summary {
@@ -265,8 +292,34 @@ a:hover {
 }
 
 
-
-
+/* Sunburn chart */
+.chart-container {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 40px;
+}
+#sunburst svg, #bar-chart svg {
+  border-radius: 12px;
+  background-color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+.tooltip {
+  position: absolute;
+  background: white;
+  border: 1px solid #ccc;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+  color: #2c3e50;
+}
+svg text {
+  font-size: 12px;
+}
 
 
 
