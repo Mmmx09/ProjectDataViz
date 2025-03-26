@@ -1,5 +1,7 @@
 E-Waste and the Environment: Analyzing Recycling Trends and Impact
-====================================================================
+=====================
+
+![ProjectDataViz](cover%20picture.jpg)
 
 ## Visualizing E-Waste data 
 
