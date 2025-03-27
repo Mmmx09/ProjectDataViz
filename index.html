@@ -7,6 +7,7 @@
 
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <script src="https://d3js.org/topojson.v3.min.js"></script>
+  <script src="https://unpkg.com/d3-sankey@0.12.3/dist/d3-sankey.min.js"></script>
 
   <link href='index_main.css' rel='stylesheet'>
 </head>
@@ -649,53 +650,107 @@ renderTable("Appliance");
 }
 drawsunburnchart()
 </script>
-  
-  <!-- Related Work and the explaination of these inspire or differ -->
-  <div class="related-section">
-    <h3>Related Work</h3>
-  
-    <div class="related-logos">
-      <a href="https://globalewaste.org/" target="_blank">
-        <img src="pictures/GESP_logo.png" alt="Global E-Waste Statistics Partnership">
-      </a>
-  
-      <a href="https://www.statista.com/topics/3409/electronic-waste-worldwide/#editorsPicks" target="_blank">
-        <img src="pictures/OIP.jpg" alt="Statista - Electronic Waste Worldwide">
-      </a>
-  
-      <a href="https://www.oecd.org/en/topics/environmental-statistics-accounts-and-indicators.html" target="_blank">
-        <img src="pictures/OECD.jpg" alt="OECD - Environmental Statistics">
-      </a>
-    </div>
-    <div class="container">
-      <p>
-        Refer to three related e-waste data visualization projects:
-        <br>1. 
-        <a href="https://globalewaste.org/" target="_blank">The Global E-waste Monitor</a>
-        : The e-Waste Report, published by the United Nations, provides global statistics and trends on e-waste.
-        <br>2. 
-        <a href="https://www.statista.com/topics/3409/electronic-waste-worldwide/#editorsPicks" target="_blank">Statista E-waste Reports</a>
-        : Provides detailed e-waste market data, recycling trends and consumer behavior analysis.
-        <br>3. 
-        <a href="https://www.oecd.org/en/topics/environmental-statistics-accounts-and-indicators.html" target="_blank">OECD Environmental Data Portal</a>
-        : Covers e-waste policy and recycling.
-      </p>
-    </div>
+
+<div class="full-width section-chart">
+  <div class="container">
+    <h3>Explore e-waste transport routes and recycling prices</h3>
+    <p class="chart-description">Here you can explore the recycling companies under the different transport routes, the recycling methods and the end use of this e-waste.</p>
   </div>
+  <svg id="sankey-chart"></svg>
+</div>
+
+<script>
+  function sankeychart() {
+  const sankeySVG = d3.select("#sankey-chart");
+  const { width, height } = sankeySVG.node().getBoundingClientRect();
+
+  const sankeyLayout = d3.sankey()
+    .nodeWidth(20)
+    .nodePadding(15)
+    .extent([[1, 1], [width - 1, height - 6]]);
+
+  const sankeyTooltip = d3.select("body")
+    .append("div")
+    .attr("class", "sankey-tooltip")
+    .style("opacity", 0);
+
+  // 定义分类颜色（3列：location, price level, exported to）
+  const sankeyColor = d => {
+    if (d.depth === 0) return "#8ecae6"; // location
+    if (d.depth === 1) return "#219ebc"; // price
+    if (d.depth === 2) return "#023047"; // exported to
+    return "#999";
+  };
+
+  d3.json("sankey_data.json").then(data => {
+    const sankeyData = sankeyLayout({
+      nodes: data.nodes.map(d => Object.assign({}, d)),
+      links: data.links.map(d => Object.assign({}, d))
+    });
+
+    sankeySVG.append("g")
+      .selectAll("path")
+      .data(sankeyData.links)
+      .join("path")
+        .attr("class", "sankey-link")
+        .attr("d", d3.sankeyLinkHorizontal())
+        .attr("stroke-width", d => Math.max(1, d.width))
+        .on("mouseover", function(event, d) {
+          const match = data.tooltips.find(t =>
+            (t.Location === d.source.name && t.Price_Level === d.target.name) ||
+            (t.Price_Level === d.source.name && t.Exported_To === d.target.name)
+          );
+          if (match) {
+            sankeyTooltip.transition().duration(200).style("opacity", 0.9);
+            sankeyTooltip.html(
+              `<strong>Company:</strong> ${match.Company}<br/>
+               <strong>Method:</strong> ${match.Method}<br/>
+               <strong>End Use:</strong> ${match.End_Use}`
+            )
+            .style("left", (event.pageX + 10) + "px")
+            .style("top", (event.pageY - 28) + "px");
+          }
+        })
+        .on("mouseout", function() {
+          sankeyTooltip.transition().duration(500).style("opacity", 0);
+        });
+
+    const sankeyNode = sankeySVG.append("g")
+      .selectAll("g")
+      .data(sankeyData.nodes)
+      .join("g")
+        .attr("class", "sankey-node");
+
+    sankeyNode.append("rect")
+        .attr("x", d => d.x0)
+        .attr("y", d => d.y0)
+        .attr("height", d => d.y1 - d.y0)
+        .attr("width", d => d.x1 - d.x0)
+        .attr("fill", sankeyColor);
+
+    sankeyNode.append("text")
+        .attr("x", d => d.x0 < width / 2 ? d.x1 + 6 : d.x0 - 6)
+        .attr("y", d => (d.y1 + d.y0) / 2)
+        .attr("dy", "0.35em")
+        .attr("text-anchor", d => d.x0 < width / 2 ? "start" : "end")
+        .text(d => d.name);
+  });
+}
+sankeychart()
+</script>
   
-  <!-- Data sources -->
+
+  <!-- The Conclusion -->
   <div class="full-width section-conclusion">
     <div class="container">
       <h3>
-        Data sources
+        The Conclusion
       </h3>
-      <p>The source code and raw data are available on 
-        <a href=https://github.com/Mmmx09/ProjectDataViz/ target="_blank">github</a>
-        and you can find all the information and details of our datasets in this 
-        <a href=https://github.com/Mmmx09/ProjectDataViz/blob/main/dataset%20information%20and%20exploration.ipynb target="_blank">Jupyter notebook</a>.
-      </p>
+      <p>The core objective of the project is to increase user awareness of e-waste issues through data visualization, and drive environmental awareness and policy improvement. We will continue to optimize our data analysis and visualization methods to provide a more intuitive and understandable presentation of information to provide valuable insights to diverse audiences.</p>.
     </div>
   </div>
+</body>
+</html>
 
   <!-- Team Organization -->
   <div class="full-width section-conclusion">
@@ -716,14 +771,40 @@ drawsunburnchart()
     </div>
   </div>
 
-  <!-- The Conclusion -->
-  <div class="full-width section-conclusion">
-    <div class="container">
-      <h3>
-        The Conclusion
-      </h3>
-      <p>The core objective of the project is to increase user awareness of e-waste issues through data visualization, and drive environmental awareness and policy improvement. We will continue to optimize our data analysis and visualization methods to provide a more intuitive and understandable presentation of information to provide valuable insights to diverse audiences.</p>.
+    <!-- Data sources -->
+    <div class="full-width section-conclusion">
+      <div class="container">
+        <h3>
+          Data sources
+        </h3>
+        <p>The source code and raw data are available on 
+          <a href=https://github.com/Mmmx09/ProjectDataViz/ target="_blank">github</a>
+          and you can find all the information and details of our datasets in this 
+          <a href=https://github.com/Mmmx09/ProjectDataViz/blob/main/dataset%20information%20and%20exploration.ipynb target="_blank">Jupyter notebook</a>.
+        </p>
+      </div>
+    </div>
+  
+
+  <!-- Related Work and the explaination of these inspire or differ -->
+  <div class="related-section">
+    <h3>Related Work</h3>
+  
+    <div class="related-logos">
+      <a href="https://globalewaste.org/" target="_blank">
+        <img src="pictures/GESP_logo.png" alt="Global E-Waste Statistics Partnership">
+      </a>
+  
+      <a href="https://www.statista.com/topics/3409/electronic-waste-worldwide/#editorsPicks" target="_blank">
+        <img src="pictures/OIP.jpg" alt="Statista - Electronic Waste Worldwide">
+      </a>
+  
+      <a href="https://www.oecd.org/en/topics/environmental-statistics-accounts-and-indicators.html" target="_blank">
+        <img src="pictures/OECD.jpg" alt="OECD - Environmental Statistics">
+      </a>
     </div>
   </div>
-</body>
-</html>
+  
+
+
+
