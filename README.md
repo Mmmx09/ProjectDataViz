@@ -26,3 +26,16 @@ You can see our [progress log](https://github.com/Mmmx09/ProjectDataViz/wiki/Wor
 **Tianjin Fu**
 
 - <https://github.com/tianjin000>
+
+## Related works
+
+Refer to three related e-waste data visualization projects:
+
+1. [The Global E-waste Monitor](https://globalewaste.org/): The e-Waste Report, published by the United Nations, provides global statistics and trends on e-waste.
+
+2. [Statista E-waste Reports](https://www.statista.com/topics/3409/electronic-waste-worldwide/#editorsPicks): Provides detailed e-waste market data, recycling trends and consumer behavior analysis.
+
+3. [OECD Environmental Data Portal](https://www.oecd.org/en/topics/environmental-statistics-accounts-and-indicators.html): Covers e-waste policy and recycling.
+        
+
+  
