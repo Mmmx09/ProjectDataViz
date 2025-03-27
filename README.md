@@ -15,7 +15,7 @@ You can see our [progress log](https://github.com/Mmmx09/ProjectDataViz/wiki/Wor
 
 ## Data source
 
-`e_waste dataset final.csv` is our main dataset and it involves about 3000 pieces of information about e-waste recycling.
+`e_waste dataset final.csv` is our main dataset and it involves about 3000 pieces of information about e-waste recycling. [kaggle link](https://www.kaggle.com/datasets/arifmia/e-waste-data)
 
 - Data Limitations note：The carbon footprint data in this study only considered the emissions in the recycling and transportation stage, and did not include the carbon footprint in the production and use stages of the equipment. As a result, the high energy consumption of appliances during the use phase is not reflected in the data, which can result in the carbon footprint of various devices looking similar.
 
