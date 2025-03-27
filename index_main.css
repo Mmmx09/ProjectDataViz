@@ -451,7 +451,6 @@ svg#sankey-chart { width: 70%; height: 500px; }
   color: white;
   border-radius: 50%;
   font-size: 24px;
-  text-align: center;
   text-decoration: none;
   line-height: 50px;
   display: flex;
