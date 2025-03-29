@@ -11,7 +11,7 @@ In our project, we explore the growing issue of electronic waste and its environ
 
 Visualizing E-waste Data is a web based interactive visualization that provides a glimpse into the global e-waste distribution and carbon footprint changes.
 
-You can see our [progress log](https://github.com/Mmmx09/ProjectDataViz/wiki/Work-Progress-Log), check our [references and data source](https://github.com/Mmmx09/ProjectDataViz/wiki/References-Resources) and [wiki page](https://github.com/Mmmx09/ProjectDataViz/wiki) with detailed explainations of our project.
+You can see our [Web page overview](https://github.com/Mmmx09/ProjectDataViz/wiki/Web-page-overview), [progress log](https://github.com/Mmmx09/ProjectDataViz/wiki/Work-Progress-Log), check our [references and data source](https://github.com/Mmmx09/ProjectDataViz/wiki/References-Resources) and [wiki page](https://github.com/Mmmx09/ProjectDataViz/wiki) with detailed explainations of our project.
 
 ## Data source
 
