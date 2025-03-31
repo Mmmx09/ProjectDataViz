@@ -766,7 +766,6 @@ drawsunburnchart()
     .attr("class", "sankey-tooltip")
     .style("opacity", 0);
 
-  // 定义分类颜色（3列：location, price level, exported to）
   const sankeyColor = d => {
     if (d.depth === 0) return "#8ecae6"; // location
     if (d.depth === 1) return "#219ebc"; // price
