@@ -19,7 +19,7 @@ The data for this project is sourced from reputable global reports and open data
 ## 4. Design Choices
 This visualization platform follows the core principles of clarity, interactivity, and responsiveness:
 
-## 1. Map (Global E-waste Generation and Recycling Rate)
+1. Map (Global E-waste Generation and Recycling Rate)
    - A choropleth map is used to display country-level e-waste data. Color gradients convey the magnitude of e-waste generation and recycling rates, providing an intuitive comparison between countries.
    - Interactivity: Users can hover over countries to view specific statistics (e.g., per capita generation, recycling rate), which enhances engagement and supports exploratory data analysis.
 
