@@ -14,7 +14,7 @@ This project is designed for the following user groups:
 ## 3. Data Sources
 The data for this project is sourced from reputable global reports and open datasets, including:
 - Global E-waste Monitor (United Nations)
-- Primary dataset: 'e-waste dataset final.csv,' which we find in Kaggle, you can go through this link: ''.
+- Primary dataset: 'e-waste dataset final.csv,' which we find in Kaggle, you can go through this link: '(https://www.kaggle.com/datasets/arifmia/e-waste-data)'.
 
 ## 4. Design Choices
 This visualization platform follows the core principles of clarity, interactivity, and responsiveness:
